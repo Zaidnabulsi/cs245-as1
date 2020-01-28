@@ -60,7 +60,7 @@ public class RowTable implements Table {
         // TODO: Implement this!
         int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
 
-        return this.rows.putInt(offset, field);
+        this.rows.putInt(offset, field);
     }
 
     /**
