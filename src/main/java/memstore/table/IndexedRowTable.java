@@ -1,11 +1,14 @@
 package memstore.table;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import memstore.data.ByteFormat;
 import memstore.data.DataLoader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.TreeMap;
+
 
 /**
  * IndexedRowTable, which stores data in row-major format.
@@ -36,6 +39,38 @@ public class IndexedRowTable implements Table {
     @Override
     public void load(DataLoader loader) throws IOException {
         // TODO: Implement this!
+
+        this.index = new TreeMap<>();
+
+        this.numCols = loader.getNumCols();
+        List<ByteBuffer> rows = loader.getRows();
+        numRows = rows.size();
+
+            
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            ByteBuffer curRow = rows.get(rowId);
+            int value = curRow.getInt(ByteFormat.FIELD_LEN * this.indexColumn);
+
+            if (!this.index.containsKey(value)) {
+                this.index.put(value, new IntArrayList());
+            }
+
+            this.index.get(value).add(rowId);
+        }
+
+
+
+        this.rows = ByteBuffer.allocate(ByteFormat.FIELD_LEN * numRows * numCols);
+
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            ByteBuffer curRow = rows.get(rowId);
+            for (int colId = 0; colId < numCols; colId++) {
+                int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
+                this.rows.putInt(offset, curRow.getInt(ByteFormat.FIELD_LEN * colId));
+            }
+        }
+
+
     }
 
     /**
@@ -43,8 +78,10 @@ public class IndexedRowTable implements Table {
      */
     @Override
     public int getIntField(int rowId, int colId) {
-        // TODO: Implement this!
-        return 0;
+        int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
+
+        return this.rows.getInt(offset);
+        //return 0;
     }
 
     /**
@@ -53,6 +90,9 @@ public class IndexedRowTable implements Table {
     @Override
     public void putIntField(int rowId, int colId, int field) {
         // TODO: Implement this!
+        int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
+
+        this.rows.putInt(offset, field);
     }
 
     /**
