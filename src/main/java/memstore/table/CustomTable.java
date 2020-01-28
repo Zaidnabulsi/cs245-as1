@@ -1,6 +1,8 @@
 package memstore.table;
 
 import memstore.data.DataLoader;
+import memstore.table.RowTable;
+import memstore.table.ColumnTable;
 
 import java.io.IOException;
 
@@ -8,7 +10,12 @@ import java.io.IOException;
  * Custom table implementation to adapt to provided query mix.
  */
 public class CustomTable implements Table {
-
+    protected int numCols;
+    protected int numRows;
+    RowTable row_table;
+    ColumnTable column_table;
+    boolean updated;
+    long col_0_sum;
     public CustomTable() { }
 
     /**
@@ -19,7 +26,12 @@ public class CustomTable implements Table {
      */
     @Override
     public void load(DataLoader loader) throws IOException {
-        // TODO: Implement this!
+        this.row_table = RowTable();
+        this.row_table.load(loader);
+        this.column_table = ColumTable();
+        this.column_table.load(loader);
+        this.updated = false;
+        this.col_0_sum = column_table.columnSum();
     }
 
     /**
@@ -27,8 +39,7 @@ public class CustomTable implements Table {
      */
     @Override
     public int getIntField(int rowId, int colId) {
-        // TODO: Implement this!
-        return 0;
+        return row_table.getIntField(rowId, colId);
     }
 
     /**
@@ -36,7 +47,11 @@ public class CustomTable implements Table {
      */
     @Override
     public void putIntField(int rowId, int colId, int field) {
-        // TODO: Implement this!
+        row_table.putIntField(rowId, colId, field);
+        column_table.putIntField(rowId, colId, field);
+        if (colId == 0) {
+            updated = true;
+        }
     }
 
     /**
@@ -47,8 +62,11 @@ public class CustomTable implements Table {
      */
     @Override
     public long columnSum() {
-        // TODO: Implement this!
-        return 0;
+        if (updated) {
+            col_0_sum = column_table.columnSum();
+            updated = false;
+        }
+        return col_0_sum;
     }
 
     /**
@@ -60,8 +78,7 @@ public class CustomTable implements Table {
      */
     @Override
     public long predicatedColumnSum(int threshold1, int threshold2) {
-        // TODO: Implement this!
-        return 0;
+        return column_table.predicatedColumnSum(threshold1, threshold2);
     }
 
     /**
@@ -72,8 +89,7 @@ public class CustomTable implements Table {
      */
     @Override
     public long predicatedAllColumnsSum(int threshold) {
-        // TODO: Implement this!
-        return 0;
+        return row_table.predicatedAllColumnsSum(threshold);
     }
 
     /**
@@ -84,8 +100,8 @@ public class CustomTable implements Table {
      */
     @Override
     public int predicatedUpdate(int threshold) {
-        // TODO: Implement this!
-        return 0;
+        row_table.predicatedUpdate(threshold);
+        return coumn_table.predicatedUpdate(threshold);
     }
 
 }
