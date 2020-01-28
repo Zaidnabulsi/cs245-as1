@@ -102,8 +102,15 @@ public class RowTable implements Table {
      */
     @Override
     public long predicatedAllColumnsSum(int threshold) {
-        // TODO: Implement this!
-        return 0;
+        int sum = 0;
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            if (getIntField(rowId, 0) > threshold) {
+                for (int colId = 0; colId < numCols; colId++) {
+                    sum += getIntField(rowId, colId);
+                }
+            }
+        }
+        return sum;
     }
 
     /**
@@ -114,7 +121,13 @@ public class RowTable implements Table {
      */
     @Override
     public int predicatedUpdate(int threshold) {
-        // TODO: Implement this!
-        return 0;
+        int sum = 0;
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            if (getIntField(rowId, 0) < threshold) {
+                putIntField(rowId, 3, getIntField(rowId, 3) + getIntField(rowId, 2));
+                sum += 1;
+            }
+        }
+        return sum;
     }
 }
