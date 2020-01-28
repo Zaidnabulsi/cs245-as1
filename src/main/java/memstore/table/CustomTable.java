@@ -26,9 +26,9 @@ public class CustomTable implements Table {
      */
     @Override
     public void load(DataLoader loader) throws IOException {
-        this.row_table = RowTable();
+        this.row_table = new RowTable();
         this.row_table.load(loader);
-        this.column_table = ColumTable();
+        this.column_table = new ColumnTable();
         this.column_table.load(loader);
         this.updated = false;
         this.col_0_sum = column_table.columnSum();
@@ -101,7 +101,7 @@ public class CustomTable implements Table {
     @Override
     public int predicatedUpdate(int threshold) {
         row_table.predicatedUpdate(threshold);
-        return coumn_table.predicatedUpdate(threshold);
+        return column_table.predicatedUpdate(threshold);
     }
 
 }
