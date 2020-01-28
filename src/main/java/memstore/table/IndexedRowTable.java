@@ -105,7 +105,7 @@ public class IndexedRowTable implements Table {
     public long columnSum() {
         // TODO: Implement this!
 
-        int sum = 0;
+        long sum = 0;
         for (int rowId = 0; rowId < numRows; rowId++) {
             sum += getIntField(rowId, 0);
         }
@@ -124,8 +124,36 @@ public class IndexedRowTable implements Table {
     @Override
     public long predicatedColumnSum(int threshold1, int threshold2) {
         // TODO: Implement this!
-        
-        int sum = 0;
+
+        long sum = 0;
+
+        if (this.indexColumn == 1) {
+            for (Integer key : index.tailMap(threshold1, false).keySet()) {
+                IntArrayList row_numbers = index.get(key);
+                for(int rowId : row_numbers){
+                    if (getIntField(rowId, 2)  < threshold2) {
+                        sum += getIntField(rowId, 0);
+                    }
+                }
+            }
+            return sum;
+        }
+
+        if (this.indexColumn == 1) {
+            for (Integer key : index.headMap(threshold2, false).keySet()) {
+                IntArrayList row_numbers = index.get(key);
+                for(int rowId : row_numbers){
+                    if (getIntField(rowId, 1)  > threshold1) {
+                        sum += getIntField(rowId, 0);
+                    }
+                }
+            }
+            return sum;
+        }
+
+
+
+
         for (int rowId = 0; rowId < numRows; rowId++) {
             if (getIntField(rowId, 1) > threshold1 && getIntField(rowId, 2) < threshold2) {
                 sum += getIntField(rowId, 0);
@@ -145,7 +173,19 @@ public class IndexedRowTable implements Table {
     @Override
     public long predicatedAllColumnsSum(int threshold) {
         // TODO: Implement this!
-        return 0;
+
+        long sum = 0;
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            if (getIntField(rowId, 0) > threshold) {
+                for (int colId = 0; colId < numCols; colId++) {
+                    sum += getIntField(rowId, colId);
+                }
+            }
+        }
+        return sum;
+
+
+        //return 0;
     }
 
     /**
@@ -157,6 +197,17 @@ public class IndexedRowTable implements Table {
     @Override
     public int predicatedUpdate(int threshold) {
         // TODO: Implement this!
-        return 0;
+
+        int num = 0;
+        for (Integer key : this.index.headMap(threshold, false).keySet()) {
+            IntArrayList row_numbers = index.get(key);
+            for(int rowId : row_numbers){
+                num ++; 
+                putIntField(rowId, 3, getIntField(rowId, 1) + getIntField(rowId, 2));
+            }
+        }
+        return num;
+
+        //return 0;
     }
 }
