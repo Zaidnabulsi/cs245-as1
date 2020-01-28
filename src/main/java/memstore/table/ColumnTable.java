@@ -1,5 +1,6 @@
 package memstore.table;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import memstore.data.ByteFormat;
 import memstore.data.DataLoader;
 
@@ -55,7 +56,7 @@ public class ColumnTable implements Table {
     @Override
     public void putIntField(int rowId, int colId, int field) {
         int offset = ByteFormat.FIELD_LEN * ((colId * numRows) + rowId);
-        columns.putInt(offset, field);
+        this.columns.putInt(offset, field);
     }
 
     /**
@@ -68,7 +69,7 @@ public class ColumnTable implements Table {
     public long columnSum() {
         // TODO: Implement this!
 
-        int sum = 0;
+        long sum = 0;
         for (int rowId = 0; rowId < numRows; rowId++) {
             sum += getIntField(rowId, 0);
         }
@@ -88,8 +89,8 @@ public class ColumnTable implements Table {
     @Override
     public long predicatedColumnSum(int threshold1, int threshold2) {
         // TODO: Implement this!
-        
-        int sum = 0;
+
+        long sum = 0;
         for (int rowId = 0; rowId < numRows; rowId++) {
             if (getIntField(rowId, 1) > threshold1 && getIntField(rowId, 2) < threshold2) {
                 sum += getIntField(rowId, 0);
@@ -109,7 +110,18 @@ public class ColumnTable implements Table {
     @Override
     public long predicatedAllColumnsSum(int threshold) {
         // TODO: Implement this!
-        return 0;
+
+        long sum = 0;
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            if (getIntField(rowId, 0) > threshold) {
+                for (int colId = 0; colId < numCols; colId++) {
+                    sum += getIntField(rowId, colId);
+                }
+            }
+        }
+        return sum;
+
+        //return 0;
     }
 
     /**
@@ -121,6 +133,31 @@ public class ColumnTable implements Table {
     @Override
     public int predicatedUpdate(int threshold) {
         // TODO: Implement this!
-        return 0;
+
+        IntArrayList rowIdxList = new IntArrayList(150);
+
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            int col0 = getIntField(rowId, 0);
+            if(col0 < threshold) {
+                rowIdxList.add(rowId);    
+            }
+        }
+
+
+        for (int i = 0; i < rowIdxList.size(); i++) {
+            int rowId = rowIdxList.get(i);
+            int tmp = getIntField(rowId, 0);
+            if(tmp < threshold) {
+                int newVal = getIntField(rowId, 2) + getIntField(rowId, 3);
+                putIntField(rowId, 3, newVal);
+            }
+        }
+        
+        
+        return rowIdxList.size(); 
+
+
+
+        //return 0;
     }
 }
