@@ -84,8 +84,14 @@ public class RowTable implements Table {
      */
     @Override
     public long predicatedColumnSum(int threshold1, int threshold2) {
-        // TODO: Implement this!
-        return 0;
+        int sum = 0;
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            if (getIntField(rowId, 1) > threshold1 && getIntField(rowId, 2) < threshold2) {
+                sum += getIntField(rowId, 0);
+            }
+        }
+        return sum;
+
     }
 
     /**
