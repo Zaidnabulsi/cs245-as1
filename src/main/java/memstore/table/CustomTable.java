@@ -26,7 +26,7 @@ public class CustomTable implements Table {
      */
     @Override
     public void load(DataLoader loader) throws IOException {
-        this.row_table = RowTable():
+        this.row_table = RowTable();
         this.row_table.load(loader);
         this.column_table = ColumTable();
         this.column_table.load(loader);
