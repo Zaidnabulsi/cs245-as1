@@ -47,9 +47,7 @@ public class RowTable implements Table {
     @Override
     public int getIntField(int rowId, int colId) {
         int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
-
         return this.rows.getInt(offset);
-        //return 0;
     }
 
     /**
@@ -57,9 +55,7 @@ public class RowTable implements Table {
      */
     @Override
     public void putIntField(int rowId, int colId, int field) {
-        // TODO: Implement this!
         int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
-
         this.rows.putInt(offset, field);
     }
 
@@ -71,8 +67,12 @@ public class RowTable implements Table {
      */
     @Override
     public long columnSum() {
-        // TODO: Implement this!
-        return 0;
+
+        int sum = 0;
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            sum += getIntField(rowId, 0);
+        }
+        return sum;
     }
 
     /**
