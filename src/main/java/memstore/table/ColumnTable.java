@@ -67,7 +67,15 @@ public class ColumnTable implements Table {
     @Override
     public long columnSum() {
         // TODO: Implement this!
-        return 0;
+
+        int sum = 0;
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            sum += getIntField(rowId, 0);
+        }
+        return sum;
+
+
+        //return 0;
     }
 
     /**
@@ -80,7 +88,16 @@ public class ColumnTable implements Table {
     @Override
     public long predicatedColumnSum(int threshold1, int threshold2) {
         // TODO: Implement this!
-        return 0;
+        
+        int sum = 0;
+        for (int rowId = 0; rowId < numRows; rowId++) {
+            if (getIntField(rowId, 1) > threshold1 && getIntField(rowId, 2) < threshold2) {
+                sum += getIntField(rowId, 0);
+            }
+        }
+        return sum;
+
+        //return 0;
     }
 
     /**
