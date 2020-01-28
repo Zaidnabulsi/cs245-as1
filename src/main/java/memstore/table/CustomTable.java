@@ -39,7 +39,7 @@ public class CustomTable implements Table {
      */
     @Override
     public int getIntField(int rowId, int colId) {
-        return row_table.getIntField(rowId, colId);
+        return column_table.getIntField(rowId, colId);
     }
 
     /**
@@ -47,7 +47,6 @@ public class CustomTable implements Table {
      */
     @Override
     public void putIntField(int rowId, int colId, int field) {
-        row_table.putIntField(rowId, colId, field);
         column_table.putIntField(rowId, colId, field);
         if (colId == 0) {
             updated = true;
@@ -89,7 +88,8 @@ public class CustomTable implements Table {
      */
     @Override
     public long predicatedAllColumnsSum(int threshold) {
-        return row_table.predicatedAllColumnsSum(threshold);
+        return column_table.predicatedAllColumnsSum(threshold);
+
     }
 
     /**
@@ -100,7 +100,7 @@ public class CustomTable implements Table {
      */
     @Override
     public int predicatedUpdate(int threshold) {
-        row_table.predicatedUpdate(threshold);
+        updated = true;
         return column_table.predicatedUpdate(threshold);
     }
 
