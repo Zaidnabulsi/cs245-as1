@@ -46,8 +46,10 @@ public class RowTable implements Table {
      */
     @Override
     public int getIntField(int rowId, int colId) {
-        // TODO: Implement this!
-        return 0;
+        int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
+
+        return this.rows.getInt(offset);
+        //return 0;
     }
 
     /**
@@ -56,6 +58,9 @@ public class RowTable implements Table {
     @Override
     public void putIntField(int rowId, int colId, int field) {
         // TODO: Implement this!
+        int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
+
+        return this.rows.putInt(offset, field);
     }
 
     /**
