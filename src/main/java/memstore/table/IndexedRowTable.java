@@ -89,10 +89,28 @@ public class IndexedRowTable implements Table {
      */
     @Override
     public void putIntField(int rowId, int colId, int field) {
-        // TODO: Implement this!
-        int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
 
-        this.rows.putInt(offset, field);
+        int cur_val = getIntField(rowId, colId);
+        
+        int offset = ByteFormat.FIELD_LEN * ((rowId * numCols) + colId);
+        rows.putInt(offset, field);
+
+        if(colId == this.indexColumn) {
+            IntArrayList tmp = this.index.get(cur_val);
+            if (tmp != null) {
+                int idx_to_remove = tmp.indexOf(rowId);
+                if (idx_to_remove >= 0) {
+                    tmp.remove(idx_to_remove);
+                }
+            }
+
+            tmp = this.index.get(field);
+            if (tmp == null) {
+                tmp = new IntArrayList(100);
+                this.index.put(field, tmp); 
+            }
+            tmp.add(rowId);
+        }
     }
 
     /**
@@ -139,7 +157,7 @@ public class IndexedRowTable implements Table {
             return sum;
         }
 
-        if (this.indexColumn == 1) {
+        if (this.indexColumn == 2) {
             for (Integer key : index.headMap(threshold2, false).keySet()) {
                 IntArrayList row_numbers = index.get(key);
                 for(int rowId : row_numbers){
@@ -203,7 +221,7 @@ public class IndexedRowTable implements Table {
             IntArrayList row_numbers = index.get(key);
             for(int rowId : row_numbers){
                 num ++; 
-                putIntField(rowId, 3, getIntField(rowId, 1) + getIntField(rowId, 2));
+                putIntField(rowId, 3, getIntField(rowId, 2) + getIntField(rowId, 3));
             }
         }
         return num;
